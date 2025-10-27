@@ -48,15 +48,23 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
             )
           : CustomScrollView(
               slivers: [
-                // App Bar with back button
+                // App Bar with back button and title
                 SliverAppBar(
                   backgroundColor: Colors.black,
                   foregroundColor: Colors.white,
                   elevation: 0,
-                  pinned: false,
+                  pinned: true,
                   leading: IconButton(
                     icon: const Icon(Icons.arrow_back),
                     onPressed: () => Navigator.pop(context),
+                  ),
+                  title: Text(
+                    _movieDetail!.title,
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
 
@@ -64,164 +72,182 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Poster Image with overlay
-                      Stack(
-                        children: [
-                          if (_movieDetail!.poster != 'N/A')
-                            Container(
-                              width: double.infinity,
-                              height: 280,
-                              decoration: BoxDecoration(
-                                color: Colors.grey[900],
-                                borderRadius: const BorderRadius.only(
-                                  bottomLeft: Radius.circular(20),
-                                  bottomRight: Radius.circular(20),
+                      // Poster Image
+                      if (_movieDetail!.poster != 'N/A')
+                        Container(
+                          width: double.infinity,
+                          height: 280,
+                          decoration: BoxDecoration(color: Colors.grey[900]),
+                          child: Image.network(
+                            _movieDetail!.poster,
+                            fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return const Center(
+                                child: Icon(
+                                  Icons.movie,
+                                  color: Colors.white54,
+                                  size: 100,
                                 ),
-                              ),
-                              child: ClipRRect(
-                                borderRadius: const BorderRadius.only(
-                                  bottomLeft: Radius.circular(20),
-                                  bottomRight: Radius.circular(20),
-                                ),
-                                child: Image.network(
-                                  _movieDetail!.poster,
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return const Center(
-                                      child: Icon(
-                                        Icons.movie,
-                                        color: Colors.white54,
-                                        size: 100,
-                                      ),
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                        ],
-                      ),
+                              );
+                            },
+                          ),
+                        ),
 
                       const SizedBox(height: 20),
 
-                      // Title and Info Card
+                      // Info Badges (Seasons, IMDb, Year)
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                        child: Container(
-                          padding: const EdgeInsets.all(20),
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFFF8282),
-                            borderRadius: BorderRadius.circular(20),
-                          ),
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              // Title
-                              Text(
-                                _movieDetail!.title,
-                                style: const TextStyle(
-                                  color: Colors.white,
-                                  fontSize: 22,
-                                  fontWeight: FontWeight.bold,
+                        child: Row(
+                          children: [
+                            if (_movieDetail!.totalSeasons != null)
+                              Flexible(
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 8,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.grey[900],
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Column(
+                                    children: [
+                                      const Text(
+                                        'total Seasons',
+                                        style: TextStyle(
+                                          color: Colors.grey,
+                                          fontSize: 10,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        _movieDetail!.totalSeasons!,
+                                        style: const TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 16,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
-                              const SizedBox(height: 12),
-
-                              // Rating and Year Row
-                              Row(
-                                children: [
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 4,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black26,
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                    child: Text(
-                                      'Total Seasons: ${_movieDetail!.totalSeasons ?? "N/A"}',
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
+                            if (_movieDetail!.totalSeasons != null)
+                              const SizedBox(width: 8),
+                            Flexible(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[900],
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Column(
+                                  children: [
+                                    const Text(
+                                      'imdbRating',
+                                      style: TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 10,
                                       ),
                                     ),
-                                  ),
-                                  const Spacer(),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 4,
+                                    const SizedBox(height: 4),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        const Icon(
+                                          Icons.star,
+                                          color: Colors.white,
+                                          size: 16,
+                                        ),
+                                        const SizedBox(width: 4),
+                                        Text(
+                                          _movieDetail!.imdbRating,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 16,
+                                            fontWeight: FontWeight.bold,
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black26,
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                    child: Text(
-                                      'imdbRating: ${_movieDetail!.imdbRating}',
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 4,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: Colors.black26,
-                                      borderRadius: BorderRadius.circular(6),
-                                    ),
-                                    child: Text(
-                                      'Year: ${_movieDetail!.year}',
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
-                              const SizedBox(height: 12),
-
-                              // Star Rating Display
-                              Row(
-                                children: List.generate(5, (index) {
-                                  double rating =
-                                      double.tryParse(
-                                        _movieDetail!.imdbRating,
-                                      ) ??
-                                      0;
-                                  double starValue = (rating / 2);
-
-                                  if (index < starValue.floor()) {
-                                    return const Icon(
-                                      Icons.star,
-                                      color: Colors.white,
-                                      size: 18,
-                                    );
-                                  } else if (index < starValue) {
-                                    return const Icon(
-                                      Icons.star_half,
-                                      color: Colors.white,
-                                      size: 18,
-                                    );
-                                  } else {
-                                    return const Icon(
-                                      Icons.star_border,
-                                      color: Colors.white,
-                                      size: 18,
-                                    );
-                                  }
-                                }),
+                            ),
+                            const SizedBox(width: 8),
+                            Flexible(
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 8,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.grey[900],
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Column(
+                                  children: [
+                                    const Text(
+                                      'Year',
+                                      style: TextStyle(
+                                        color: Colors.grey,
+                                        fontSize: 10,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      _movieDetail!.year,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 16,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
-                            ],
-                          ),
+                            ),
+                          ],
+                        ),
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      // Star Rating Display
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: List.generate(5, (index) {
+                            double rating =
+                                double.tryParse(_movieDetail!.imdbRating) ?? 0;
+                            double starValue = (rating / 2);
+
+                            if (index < starValue.floor()) {
+                              return const Icon(
+                                Icons.star,
+                                color: Colors.white,
+                                size: 24,
+                              );
+                            } else if (index < starValue) {
+                              return const Icon(
+                                Icons.star_half,
+                                color: Colors.white,
+                                size: 24,
+                              );
+                            } else {
+                              return const Icon(
+                                Icons.star_border,
+                                color: Colors.white,
+                                size: 24,
+                              );
+                            }
+                          }),
                         ),
                       ),
 

@@ -15,20 +15,26 @@ class OmdbApiService {
 
     try {
       final url = Uri.parse('$_baseUrl?apikey=$_apiKey&s=$query');
+      print('Searching URL: $url'); // Debug log
+
       final response = await http.get(url);
+      print('Response status: ${response.statusCode}'); // Debug log
+      print('Response body: ${response.body}'); // Debug log
 
       if (response.statusCode == 200) {
         final data = json.decode(response.body);
 
         if (data['Response'] == 'True') {
           final List<dynamic> results = data['Search'];
+          print('Found ${results.length} results'); // Debug log
           return results.map((json) => Movie.fromJson(json)).toList();
         } else {
-          // No results found
+          // No results found or API error
+          print('API Error: ${data['Error']}'); // Debug log
           return [];
         }
       } else {
-        throw Exception('Failed to load movies');
+        throw Exception('Failed to load movies: ${response.statusCode}');
       }
     } catch (e) {
       print('Error searching movies: $e');

@@ -19,26 +19,38 @@ class _SearchPageState extends State<SearchPage> {
 
   void _performSearch() async {
     String query = _searchController.text.trim();
-    if (query.isEmpty) return;
+    if (query.isEmpty) {
+      setState(() {
+        _errorMessage = 'Please enter a search term';
+      });
+      return;
+    }
 
     setState(() {
       _isLoading = true;
       _errorMessage = '';
+      _searchResults = [];
     });
 
     try {
+      print('Searching for: $query'); // Debug log
       final results = await _apiService.searchMovies(query);
+      print('Received ${results.length} results'); // Debug log
+
       setState(() {
         _searchResults = results;
         _isLoading = false;
         if (results.isEmpty) {
-          _errorMessage = 'No results found';
+          _errorMessage =
+              'No results found for "$query".\nTry different keywords.';
         }
       });
     } catch (e) {
+      print('Search error: $e'); // Debug log
       setState(() {
         _isLoading = false;
-        _errorMessage = 'Error searching movies';
+        _errorMessage =
+            'Error searching movies.\nCheck your internet connection.';
       });
     }
   }
@@ -222,54 +234,58 @@ class _SearchPageState extends State<SearchPage> {
                   Center(
                     child: Padding(
                       padding: const EdgeInsets.all(32.0),
-                      child: Text(
-                        _errorMessage,
-                        style: TextStyle(color: Colors.grey[600], fontSize: 16),
+                      child: Column(
+                        children: [
+                          Icon(
+                            Icons.search_off,
+                            size: 64,
+                            color: Colors.grey[700],
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            _errorMessage,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.grey[400],
+                              fontSize: 16,
+                              height: 1.5,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   )
                 else
-                  // Trending Section (default view)
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Trending Red',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                      const SizedBox(height: 12),
-                      const Text(
-                        'Barbie',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      const SizedBox(height: 8),
-                      const Text(
-                        'Back to the future',
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
-                        ),
-                      ),
-                      const SizedBox(height: 200),
-                      Center(
-                        child: Text(
-                          'Search for movies and series',
-                          style: TextStyle(
-                            color: Colors.grey[600],
-                            fontSize: 16,
+                  // Default view - empty state
+                  Center(
+                    child: Padding(
+                      padding: const EdgeInsets.all(32.0),
+                      child: Column(
+                        children: [
+                          const SizedBox(height: 100),
+                          Icon(Icons.search, size: 80, color: Colors.grey[700]),
+                          const SizedBox(height: 24),
+                          Text(
+                            'Search for movies and series',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.grey[400],
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
-                        ),
+                          const SizedBox(height: 8),
+                          Text(
+                            'Enter a title to get started',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              color: Colors.grey[600],
+                              fontSize: 14,
+                            ),
+                          ),
+                        ],
                       ),
-                    ],
+                    ),
                   ),
               ],
             ),
