@@ -58,13 +58,28 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                     icon: const Icon(Icons.arrow_back),
                     onPressed: () => Navigator.pop(context),
                   ),
-                  title: Text(
-                    _movieDetail!.title,
-                    style: const TextStyle(
-                      color: Colors.white,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                    ),
+                  title: Row(
+                    children: [
+                      Image.asset(
+                        'assets/logo.png',
+                        width: 36,
+                        height: 36,
+                        fit: BoxFit.contain,
+                      ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Text(
+                          _movieDetail!.title,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
 
@@ -72,60 +87,88 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Poster Image
-                      if (_movieDetail!.poster != 'N/A')
-                        Container(
-                          width: double.infinity,
-                          height: 280,
-                          decoration: BoxDecoration(color: Colors.grey[900]),
-                          child: Image.network(
-                            _movieDetail!.poster,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return const Center(
-                                child: Icon(
-                                  Icons.movie,
-                                  color: Colors.white54,
-                                  size: 100,
-                                ),
-                              );
-                            },
+                      // Poster Image (rounded, fixed aspect ratio, graceful loading)
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(16),
+                          child: AspectRatio(
+                            aspectRatio: 16 / 9,
+                            child: _movieDetail!.poster != 'N/A'
+                                ? Image.network(
+                                    _movieDetail!.poster,
+                                    fit: BoxFit.cover,
+                                    loadingBuilder: (context, child, progress) {
+                                      if (progress == null) return child;
+                                      return Container(
+                                        color: Colors.grey[900],
+                                        child: const Center(
+                                          child: CircularProgressIndicator(
+                                            color: Color(0xFFFF8282),
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                    errorBuilder: (context, error, stackTrace) {
+                                      return Container(
+                                        color: Colors.grey[900],
+                                        child: const Center(
+                                          child: Icon(
+                                            Icons.broken_image,
+                                            color: Colors.white54,
+                                            size: 54,
+                                          ),
+                                        ),
+                                      );
+                                    },
+                                  )
+                                : Container(
+                                    color: Colors.grey[900],
+                                    child: const Center(
+                                      child: Icon(
+                                        Icons.movie,
+                                        color: Colors.white54,
+                                        size: 60,
+                                      ),
+                                    ),
+                                  ),
                           ),
                         ),
+                      ),
 
                       const SizedBox(height: 20),
 
-                      // Info Badges (Seasons, IMDb, Year)
+                      // Info Badges (Seasons, IMDb, Year) - uniform sizing
                       Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 16.0),
                         child: Row(
                           children: [
                             if (_movieDetail!.totalSeasons != null)
-                              Flexible(
+                              Expanded(
                                 child: Container(
                                   padding: const EdgeInsets.symmetric(
                                     horizontal: 12,
-                                    vertical: 8,
+                                    vertical: 12,
                                   ),
                                   decoration: BoxDecoration(
                                     color: Colors.grey[900],
-                                    borderRadius: BorderRadius.circular(8),
+                                    borderRadius: BorderRadius.circular(12),
                                   ),
                                   child: Column(
                                     children: [
                                       const Text(
-                                        'total Seasons',
+                                        'Seasons',
                                         style: TextStyle(
                                           color: Colors.grey,
-                                          fontSize: 10,
+                                          fontSize: 12,
                                         ),
                                       ),
-                                      const SizedBox(height: 4),
+                                      const SizedBox(height: 6),
                                       Text(
                                         _movieDetail!.totalSeasons!,
                                         style: const TextStyle(
                                           color: Colors.white,
-                                          fontSize: 16,
+                                          fontSize: 18,
                                           fontWeight: FontWeight.bold,
                                         ),
                                       ),
@@ -135,26 +178,26 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                               ),
                             if (_movieDetail!.totalSeasons != null)
                               const SizedBox(width: 8),
-                            Flexible(
+                            Expanded(
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 12,
-                                  vertical: 8,
+                                  vertical: 12,
                                 ),
                                 decoration: BoxDecoration(
                                   color: Colors.grey[900],
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Column(
                                   children: [
                                     const Text(
-                                      'imdbRating',
+                                      'IMDb',
                                       style: TextStyle(
                                         color: Colors.grey,
-                                        fontSize: 10,
+                                        fontSize: 12,
                                       ),
                                     ),
-                                    const SizedBox(height: 4),
+                                    const SizedBox(height: 6),
                                     Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
@@ -162,14 +205,14 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                                         const Icon(
                                           Icons.star,
                                           color: Colors.white,
-                                          size: 16,
+                                          size: 18,
                                         ),
-                                        const SizedBox(width: 4),
+                                        const SizedBox(width: 6),
                                         Text(
                                           _movieDetail!.imdbRating,
                                           style: const TextStyle(
                                             color: Colors.white,
-                                            fontSize: 16,
+                                            fontSize: 18,
                                             fontWeight: FontWeight.bold,
                                           ),
                                         ),
@@ -180,15 +223,15 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                               ),
                             ),
                             const SizedBox(width: 8),
-                            Flexible(
+                            Expanded(
                               child: Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 12,
-                                  vertical: 8,
+                                  vertical: 12,
                                 ),
                                 decoration: BoxDecoration(
                                   color: Colors.grey[900],
-                                  borderRadius: BorderRadius.circular(8),
+                                  borderRadius: BorderRadius.circular(12),
                                 ),
                                 child: Column(
                                   children: [
@@ -196,15 +239,15 @@ class _MovieDetailPageState extends State<MovieDetailPage> {
                                       'Year',
                                       style: TextStyle(
                                         color: Colors.grey,
-                                        fontSize: 10,
+                                        fontSize: 12,
                                       ),
                                     ),
-                                    const SizedBox(height: 4),
+                                    const SizedBox(height: 6),
                                     Text(
                                       _movieDetail!.year,
                                       style: const TextStyle(
                                         color: Colors.white,
-                                        fontSize: 16,
+                                        fontSize: 18,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
